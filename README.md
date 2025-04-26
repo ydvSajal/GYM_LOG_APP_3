@@ -33,11 +33,19 @@ GYM_MANAGEMENT_SYSTEM/
 
 ```mermaid
 classDiagram
-    %% Theme Configuration
+    GymManagementGUI --> GymManagementSystem : uses
+    GymManagementSystem --> MemberManager : manages
+    GymManagementSystem --> WorkoutManager : manages
+    MemberManager --> Member : creates/manages
+    WorkoutManager --> Workout : creates/manages
+    MemberManager --> DataStorage : saves/loads
+    WorkoutManager --> DataStorage : saves/loads
+    WorkoutManager --> MemberManager : validates
+
     class GymManagementGUI {
         -memberManager: MemberManager
         -workoutManager: WorkoutManager
-        +start(Stage primaryStage)
+        +start(Stage)
         +showRegisterMemberDialog()
         +showRecordWorkoutDialog()
         +showCalculateBMIDialog()
@@ -49,22 +57,22 @@ classDiagram
         -workoutManager: WorkoutManager
         +addMember(Member)
         +removeMember(Member)
-        +recordWorkout(int, String, int)
+        +recordWorkout(int,String,int)
         +getMemberWorkouts(int)
     }
 
     class MemberManager {
         -members: List~Member~
-        +registerNewMember(String, int, String)
+        +registerNewMember(String,int,String)
         +getMember(int)
         +getAllMembers()
-        +updateMember(int, String, int, String)
+        +updateMember(int,String,int,String)
     }
 
     class WorkoutManager {
         -workouts: List~Workout~
         -memberManager: MemberManager
-        +recordWorkout(int, String, int)
+        +recordWorkout(int,String,int)
         +getWorkoutHistory(int)
     }
 
@@ -96,28 +104,6 @@ classDiagram
         +saveWorkouts(List~Workout~)
         +loadWorkouts()
     }
-
-    GymManagementGUI --> GymManagementSystem : uses
-    GymManagementSystem --> MemberManager : manages
-    GymManagementSystem --> WorkoutManager : manages
-    MemberManager --> Member : creates/manages
-    WorkoutManager --> Workout : creates/manages
-    MemberManager --> DataStorage : saves/loads
-    WorkoutManager --> DataStorage : saves/loads
-    WorkoutManager --> MemberManager : validates
-
-    %% Style Configuration
-    classDef default fill:#1a1a1a,stroke:#666,stroke-width:2px,color:#fff
-    classDef main fill:#2a1a3a,stroke:#666,stroke-width:2px,color:#fff
-    classDef manager fill:#1a2a3a,stroke:#666,stroke-width:2px,color:#fff
-    classDef model fill:#1a3a2a,stroke:#666,stroke-width:2px,color:#fff
-    classDef storage fill:#3a2a1a,stroke:#666,stroke-width:2px,color:#fff
-
-    %% Apply Styles
-    class GymManagementGUI,GymManagementSystem main
-    class MemberManager,WorkoutManager manager
-    class Member,Workout model
-    class DataStorage storage
 ```
 
 ## Class Hierarchy and Connections
