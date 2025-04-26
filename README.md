@@ -33,132 +33,150 @@ GYM_MANAGEMENT_SYSTEM/
 
 ```mermaid
 classDiagram
-    class GymManagementGUI {
-        -memberManager: MemberManager
-        -workoutManager: WorkoutManager
-        +start(Stage primaryStage)
-        +showRegisterMemberDialog()
-        +showRecordWorkoutDialog()
-        +showCalculateBMIDialog()
-        +showMemberInfoDialog()
-    }
+    %% Theme Configuration
+    classDiagram
+        class GymManagementGUI {
+            -memberManager: MemberManager
+            -workoutManager: WorkoutManager
+            +start(Stage primaryStage)
+            +showRegisterMemberDialog()
+            +showRecordWorkoutDialog()
+            +showCalculateBMIDialog()
+            +showMemberInfoDialog()
+        }
 
-    class GymManagementSystem {
-        -memberManager: MemberManager
-        -workoutManager: WorkoutManager
-        +addMember(Member)
-        +removeMember(Member)
-        +recordWorkout(int, String, int)
-        +getMemberWorkouts(int)
-    }
+        class GymManagementSystem {
+            -memberManager: MemberManager
+            -workoutManager: WorkoutManager
+            +addMember(Member)
+            +removeMember(Member)
+            +recordWorkout(int, String, int)
+            +getMemberWorkouts(int)
+        }
 
-    class MemberManager {
-        -members: List~Member~
-        +registerNewMember(String, int, String)
-        +getMember(int)
-        +getAllMembers()
-        +updateMember(int, String, int, String)
-    }
+        class MemberManager {
+            -members: List~Member~
+            +registerNewMember(String, int, String)
+            +getMember(int)
+            +getAllMembers()
+            +updateMember(int, String, int, String)
+        }
 
-    class WorkoutManager {
-        -workouts: List~Workout~
-        -memberManager: MemberManager
-        +recordWorkout(int, String, int)
-        +getWorkoutHistory(int)
-    }
+        class WorkoutManager {
+            -workouts: List~Workout~
+            -memberManager: MemberManager
+            +recordWorkout(int, String, int)
+            +getWorkoutHistory(int)
+        }
 
-    class Member {
-        -id: int
-        -name: String
-        -age: int
-        -membershipType: String
-        -height: double
-        -weight: double
-        -bmi: double
-        +calculateBMI()
-        +getBMIStatus()
-    }
+        class Member {
+            -id: int
+            -name: String
+            -age: int
+            -membershipType: String
+            -height: double
+            -weight: double
+            -bmi: double
+            +calculateBMI()
+            +getBMIStatus()
+        }
 
-    class Workout {
-        -id: int
-        -memberId: int
-        -exercise: String
-        -sets: int
-        -date: String
-    }
+        class Workout {
+            -id: int
+            -memberId: int
+            -exercise: String
+            -sets: int
+            -date: String
+        }
 
-    class DataStorage {
-        -MEMBERS_FILE: String
-        -WORKOUTS_FILE: String
-        +saveMembers(List~Member~)
-        +loadMembers()
-        +saveWorkouts(List~Workout~)
-        +loadWorkouts()
-    }
+        class DataStorage {
+            -MEMBERS_FILE: String
+            -WORKOUTS_FILE: String
+            +saveMembers(List~Member~)
+            +loadMembers()
+            +saveWorkouts(List~Workout~)
+            +loadWorkouts()
+        }
 
-    GymManagementGUI --> GymManagementSystem : uses
-    GymManagementSystem --> MemberManager : manages
-    GymManagementSystem --> WorkoutManager : manages
-    MemberManager --> Member : creates/manages
-    WorkoutManager --> Workout : creates/manages
-    MemberManager --> DataStorage : saves/loads
-    WorkoutManager --> DataStorage : saves/loads
-    WorkoutManager --> MemberManager : validates
+        GymManagementGUI --> GymManagementSystem : uses
+        GymManagementSystem --> MemberManager : manages
+        GymManagementSystem --> WorkoutManager : manages
+        MemberManager --> Member : creates/manages
+        WorkoutManager --> Workout : creates/manages
+        MemberManager --> DataStorage : saves/loads
+        WorkoutManager --> DataStorage : saves/loads
+        WorkoutManager --> MemberManager : validates
+
+    %% Style Configuration
+    classDef default fill:#1a1a1a,stroke:#666,stroke-width:2px,color:#fff
+    classDef main fill:#2a1a3a,stroke:#666,stroke-width:2px,color:#fff
+    classDef manager fill:#1a2a3a,stroke:#666,stroke-width:2px,color:#fff
+    classDef model fill:#1a3a2a,stroke:#666,stroke-width:2px,color:#fff
+    classDef storage fill:#3a2a1a,stroke:#666,stroke-width:2px,color:#fff
+
+    %% Apply Styles
+    class GymManagementGUI,GymManagementSystem main
+    class MemberManager,WorkoutManager manager
+    class Member,Workout model
+    class DataStorage storage
 ```
 
 ## Class Hierarchy and Connections
 
 ```mermaid
 graph TD
-    %% Main Application
-    A[GymManagementGUI] --> B[GymManagementSystem]
-    
-    %% Core System
-    B --> C[MemberManager]
-    B --> D[WorkoutManager]
-    
-    %% Data Models
-    C --> E[Member]
-    D --> F[Workout]
-    
-    %% Data Storage
-    C --> G[DataStorage]
-    D --> G
-    
-    %% Member Attributes
-    E --> E1[ID]
-    E --> E2[Name]
-    E --> E3[Age]
-    E --> E4[Membership Type]
-    E --> E5[Height]
-    E --> E6[Weight]
-    E --> E7[BMI]
-    E --> E8[Status]
-    
-    %% Workout Attributes
-    F --> F1[ID]
-    F --> F2[Member ID]
-    F --> F3[Exercise]
-    F --> F4[Sets]
-    F --> F5[Date]
-    
-    %% Data Storage Files
-    G --> G1[members.txt]
-    G --> G2[workouts.txt]
-    
-    %% Style Classes
-    classDef main fill:#f9f,stroke:#333,stroke-width:2px
-    classDef manager fill:#bbf,stroke:#333,stroke-width:2px
-    classDef model fill:#bfb,stroke:#333,stroke-width:2px
-    classDef storage fill:#fbb,stroke:#333,stroke-width:2px
-    classDef attribute fill:#ddd,stroke:#333,stroke-width:1px
-    
-    %% Apply Styles
-    class A,B main
-    class C,D manager
-    class E,F model
-    class G storage
-    class E1,E2,E3,E4,E5,E6,E7,E8,F1,F2,F3,F4,F5,G1,G2 attribute
+    %% Theme Configuration
+    classDiagram
+        %% Main Application
+        A[GymManagementGUI] --> B[GymManagementSystem]
+        
+        %% Core System
+        B --> C[MemberManager]
+        B --> D[WorkoutManager]
+        
+        %% Data Models
+        C --> E[Member]
+        D --> F[Workout]
+        
+        %% Data Storage
+        C --> G[DataStorage]
+        D --> G
+        
+        %% Member Attributes
+        E --> E1[ID]
+        E --> E2[Name]
+        E --> E3[Age]
+        E --> E4[Membership Type]
+        E --> E5[Height]
+        E --> E6[Weight]
+        E --> E7[BMI]
+        E --> E8[Status]
+        
+        %% Workout Attributes
+        F --> F1[ID]
+        F --> F2[Member ID]
+        F --> F3[Exercise]
+        F --> F4[Sets]
+        F --> F5[Date]
+        
+        %% Data Storage Files
+        G --> G1[members.txt]
+        G --> G2[workouts.txt]
+        
+        %% Style Configuration
+        classDef default fill:#1a1a1a,stroke:#666,stroke-width:2px,color:#fff
+        classDef main fill:#2a1a3a,stroke:#666,stroke-width:2px,color:#fff
+        classDef manager fill:#1a2a3a,stroke:#666,stroke-width:2px,color:#fff
+        classDef model fill:#1a3a2a,stroke:#666,stroke-width:2px,color:#fff
+        classDef storage fill:#3a2a1a,stroke:#666,stroke-width:2px,color:#fff
+        classDef attribute fill:#2a2a2a,stroke:#666,stroke-width:1px,color:#fff
+        
+        %% Apply Styles
+        class A,B main
+        class C,D manager
+        class E,F model
+        class G storage
+        class E1,E2,E3,E4,E5,E6,E7,E8,F1,F2,F3,F4,F5,G1,G2 attribute
 ```
 
 ### Class Hierarchy Explanation
