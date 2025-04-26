@@ -1,107 +1,329 @@
 # Gym Management System
 
-A simple terminal-based Gym Management System developed in Java for managing gym members and their workouts.
+A modern JavaFX-based Gym Management System for efficiently managing gym members, tracking workouts, and monitoring fitness progress.
 
 ## Features
 
+- Modern GUI with Dark Theme
 - Member Registration and Management
-- Workout Tracking
+- Workout Tracking System
+- BMI Calculator
 - Member Information Display
-- Membership Status Tracking
-- Multiple Membership Types (Basic, Premium, VIP)
+- Data Persistence using File Storage
+- Real-time Updates
 
 ## Project Structure
 
-The project is divided into 5 main Java files:
-
-1. `src/GymManagementSystem.java` - Main class that coordinates the system
-2. `src/Member.java` - Member data structure
-3. `src/Workout.java` - Workout data structure
-4. `src/MemberManager.java` - Handles member-related operations
-5. `src/WorkoutManager.java` - Handles workout-related operations
-
-## File Structure
-
 ```
 GYM_MANAGEMENT_SYSTEM/
-├── src/                    # Source code directory
-│   ├── GymManagementSystem.java    # Main application class
-│   ├── Member.java                 # Member data model
-│   ├── Workout.java                # Workout data model
-│   ├── MemberManager.java          # Member management logic
-│   └── WorkoutManager.java         # Workout management logic
-├── README.md               # Project documentation
-├── LICENSE                 # MIT License
-└── .gitignore             # Git ignore rules
+├── src/main/java/gym_management_system/  # Source code directory
+│   ├── GymManagementGUI.java            # Main GUI application
+│   ├── GymManagementSystem.java         # Core system logic
+│   ├── Member.java                      # Member model
+│   ├── Workout.java                     # Workout model
+│   ├── MemberManager.java               # Member management
+│   ├── WorkoutManager.java              # Workout management
+│   └── DataStorage.java                 # Data persistence
+├── pom.xml                              # Maven configuration
+├── README.md                            # Documentation
+└── .gitignore                           # Git ignore rules
 ```
 
-## Workflow Structure
+## System Architecture and File Connections
 
-### 1. Member Registration Flow
-```
-User Input → MemberManager → Member Class → Data Storage
+```mermaid
+classDiagram
+    class GymManagementGUI {
+        -memberManager: MemberManager
+        -workoutManager: WorkoutManager
+        +start(Stage primaryStage)
+        +showRegisterMemberDialog()
+        +showRecordWorkoutDialog()
+        +showCalculateBMIDialog()
+        +showMemberInfoDialog()
+    }
+
+    class GymManagementSystem {
+        -memberManager: MemberManager
+        -workoutManager: WorkoutManager
+        +addMember(Member)
+        +removeMember(Member)
+        +recordWorkout(int, String, int)
+        +getMemberWorkouts(int)
+    }
+
+    class MemberManager {
+        -members: List~Member~
+        +registerNewMember(String, int, String)
+        +getMember(int)
+        +getAllMembers()
+        +updateMember(int, String, int, String)
+    }
+
+    class WorkoutManager {
+        -workouts: List~Workout~
+        -memberManager: MemberManager
+        +recordWorkout(int, String, int)
+        +getWorkoutHistory(int)
+    }
+
+    class Member {
+        -id: int
+        -name: String
+        -age: int
+        -membershipType: String
+        -height: double
+        -weight: double
+        -bmi: double
+        +calculateBMI()
+        +getBMIStatus()
+    }
+
+    class Workout {
+        -id: int
+        -memberId: int
+        -exercise: String
+        -sets: int
+        -date: String
+    }
+
+    class DataStorage {
+        -MEMBERS_FILE: String
+        -WORKOUTS_FILE: String
+        +saveMembers(List~Member~)
+        +loadMembers()
+        +saveWorkouts(List~Workout~)
+        +loadWorkouts()
+    }
+
+    GymManagementGUI --> GymManagementSystem : uses
+    GymManagementSystem --> MemberManager : manages
+    GymManagementSystem --> WorkoutManager : manages
+    MemberManager --> Member : creates/manages
+    WorkoutManager --> Workout : creates/manages
+    MemberManager --> DataStorage : saves/loads
+    WorkoutManager --> DataStorage : saves/loads
+    WorkoutManager --> MemberManager : validates
 ```
 
-### 2. Workout Recording Flow
-```
-User Input → WorkoutManager → MemberManager (validation) → Workout Class → Data Storage
+## Class Hierarchy and Connections
+
+```mermaid
+graph TD
+    %% Main Application
+    A[GymManagementGUI] --> B[GymManagementSystem]
+    
+    %% Core System
+    B --> C[MemberManager]
+    B --> D[WorkoutManager]
+    
+    %% Data Models
+    C --> E[Member]
+    D --> F[Workout]
+    
+    %% Data Storage
+    C --> G[DataStorage]
+    D --> G
+    
+    %% Member Attributes
+    E --> E1[ID]
+    E --> E2[Name]
+    E --> E3[Age]
+    E --> E4[Membership Type]
+    E --> E5[Height]
+    E --> E6[Weight]
+    E --> E7[BMI]
+    E --> E8[Status]
+    
+    %% Workout Attributes
+    F --> F1[ID]
+    F --> F2[Member ID]
+    F --> F3[Exercise]
+    F --> F4[Sets]
+    F --> F5[Date]
+    
+    %% Data Storage Files
+    G --> G1[members.txt]
+    G --> G2[workouts.txt]
+    
+    %% Style Classes
+    classDef main fill:#f9f,stroke:#333,stroke-width:2px
+    classDef manager fill:#bbf,stroke:#333,stroke-width:2px
+    classDef model fill:#bfb,stroke:#333,stroke-width:2px
+    classDef storage fill:#fbb,stroke:#333,stroke-width:2px
+    classDef attribute fill:#ddd,stroke:#333,stroke-width:1px
+    
+    %% Apply Styles
+    class A,B main
+    class C,D manager
+    class E,F model
+    class G storage
+    class E1,E2,E3,E4,E5,E6,E7,E8,F1,F2,F3,F4,F5,G1,G2 attribute
 ```
 
-### 3. Information Display Flow
-```
-User Request → MemberManager/WorkoutManager → Data Retrieval → Display Information
-```
+### Class Hierarchy Explanation
 
-## How to Use
+1. **Top Level (GUI & System)**
+   - `GymManagementGUI`: User interface layer
+   - `GymManagementSystem`: Core system coordinator
 
-1. Compile all Java files:
+2. **Management Layer**
+   - `MemberManager`: Handles member operations
+   - `WorkoutManager`: Handles workout operations
+
+3. **Data Models**
+   - `Member`: Stores member information
+     - Basic info (ID, Name, Age)
+     - Physical attributes (Height, Weight, BMI)
+     - Status info (Membership Type, Status)
+   - `Workout`: Stores workout information
+     - Exercise details (Exercise, Sets)
+     - Tracking info (ID, Member ID, Date)
+
+4. **Data Storage**
+   - `DataStorage`: Manages file operations
+     - `members.txt`: Stores member data
+     - `workouts.txt`: Stores workout data
+
+### Data Flow Paths
+
+1. **Member Registration Path**
+   ```
+   GUI → System → MemberManager → Member → DataStorage → members.txt
+   ```
+
+2. **Workout Recording Path**
+   ```
+   GUI → System → WorkoutManager → MemberManager (validation) → Workout → DataStorage → workouts.txt
+   ```
+
+3. **Data Retrieval Path**
+   ```
+   DataStorage → Member/Workout → Manager → System → GUI
+   ```
+
+## Team Responsibilities
+
+### 1. Sajal Kumar (Team Lead & Frontend Developer)
+**Files Responsible For:**
+- `GymManagementGUI.java`
+- Project Setup and Configuration
+- `pom.xml`
+
+**Tasks:**
+- ✅ Design and implement the modern dark-themed GUI
+- ✅ Create responsive user interface components
+- ✅ Implement event handlers for all GUI elements
+- ✅ Manage project dependencies and build configuration
+- ✅ Coordinate between team members
+- ✅ Code review and quality assurance
+
+### 2. Akash (Backend Developer - Member Management)
+**Files Responsible For:**
+- `Member.java`
+- `MemberManager.java`
+- Unit Tests for Member-related functionality
+
+**Tasks:**
+- ✅ Implement member data model with all required attributes
+- ✅ Create member management logic (CRUD operations)
+- ✅ Implement BMI calculation functionality
+- ✅ Handle member validation and error checking
+- ✅ Write unit tests for member-related features
+- ✅ Document member management API
+
+### 3. Kunal (Backend Developer - Workout Management)
+**Files Responsible For:**
+- `Workout.java`
+- `WorkoutManager.java`
+- Unit Tests for Workout-related functionality
+
+**Tasks:**
+- ✅ Design workout tracking system
+- ✅ Implement workout recording and history
+- ✅ Create workout statistics and reporting
+- ✅ Handle workout validation and error checking
+- ✅ Write unit tests for workout-related features
+- ✅ Document workout management API
+
+### 4. Devansh (Data Management & Integration)
+**Files Responsible For:**
+- `DataStorage.java`
+- `GymManagementSystem.java`
+- System Integration Tests
+
+**Tasks:**
+- ✅ Implement data persistence layer
+- ✅ Create file handling mechanisms
+- ✅ Manage data format and storage
+- ✅ Handle data validation and error recovery
+- ✅ Integrate all system components
+- ✅ Write system integration tests
+
+## Build and Run Instructions
+
+1. Ensure you have Java 17 and Maven installed
+2. Clone the repository
+3. Navigate to the project directory
+4. Run the following commands:
+
 ```bash
-javac src/*.java
+mvn clean install
+mvn javafx:run
 ```
 
-2. Run the program:
-```bash
-java -cp src GYM_MANAGEMENT_SYSTEM.GymManagementSystem
-```
+## Development Guidelines
 
-3. Use the menu system by entering numbers 1-5:
-   - 1: Register New Member
-   - 2: Record Workout
-   - 3: Display Member Information
-   - 4: Display All Members
-   - 5: Exit
+1. **Code Style**
+   - Follow Java naming conventions
+   - Add comments for complex logic
+   - Keep methods focused and concise
 
-## Team Members
+2. **Git Workflow**
+   - Create feature branches from main
+   - Use descriptive commit messages
+   - Request code reviews before merging
 
-1. Sajal - `Member.java`
-   - Responsible for member data structure
-   - Handles member attributes and getters/setters
+3. **Testing**
+   - Write unit tests for new features
+   - Ensure all tests pass before committing
+   - Test GUI components manually
 
-2. Devansh - `Workout.java`
-   - Responsible for workout data structure
-   - Handles workout attributes and getters
+## Dependencies
 
-3. Kunal - `MemberManager.java`
-   - Handles member registration
-   - Manages member information display
-   - Member search functionality
+- Java 17
+- JavaFX 17.0.2
+- Maven 3.8+
 
-4. Aksh - `WorkoutManager.java`
-   - Handles workout recording
-   - Manages workout history display
-   - Workout tracking functionality
+## Future Enhancements
 
-## Requirements
+1. **Phase 1 (Aksh)**
+   - Enhanced UI/UX features
+   - Dark/Light theme toggle
+   - Responsive design improvements
 
-- Java Development Kit (JDK) 8 or higher
-- Basic understanding of Java programming
+2. **Phase 2 (Sajal)**
+   - Advanced member analytics
+   - Membership renewal notifications
+   - Custom membership plans
 
-## Note
+3. **Phase 3 (Kunal)**
+   - Workout plan recommendations
+   - Progress tracking graphs
+   - Exercise library
 
-This is a simple terminal-based application designed for educational purposes. All data is stored in memory and will be lost when the program is closed.
+4. **Phase 4 (Devansh)**
+   - Database integration
+   - Backup and restore functionality
+   - Data export features
 
-## Copyright
+## Contact Information
 
-© 2024 Sajal Kumar. All rights reserved.
+- **Sajal Kumar** (Team Lead) - sajalkumar1765@gmail.com
+- **Akash** (Member Management) - [Add Email]
+- **Kunal** (Workout Management) - [Add Email]
+- **Devansh** (Data Management) - [Add Email]
 
-Contact: sajalkumar1765@gmail.com 
+## License
+
+© 2024 Team GMS. All rights reserved. 

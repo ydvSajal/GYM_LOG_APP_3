@@ -1,0 +1,30 @@
+Member ID: 1
+Name: sajal
+Age: 19
+Membership Type:  Gold
+Height: 0.0m
+Weight: 0.0kg
+BMI: 0.0 (Underweight)
+Join Date: 2025-04-26
+Status: Active
+---
+Member ID: 2
+Name: aksj
+Age: 23
+Membership Type:  Silver
+Height: 0.0m
+Weight: 0.0kg
+BMI: 0.0 (Underweight)
+Join Date: 2025-04-26
+Status: Active
+---
+Member ID: 3
+Name: sajal
+Age: 23
+Membership Type: Bronze
+Height: 0.0m
+Weight: 0.0kg
+BMI: 0.0 (Underweight)
+Join Date: 2025-04-26
+Status: Active
+---

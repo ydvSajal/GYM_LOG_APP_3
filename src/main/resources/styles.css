@@ -1,0 +1,101 @@
+.root {
+    -fx-background-color: #2b2b2b;
+    -fx-font-family: "Arial";
+}
+
+.menu-bar {
+    -fx-background-color: #333333;
+}
+
+.menu-bar .label {
+    -fx-text-fill: white;
+}
+
+.menu-item .label {
+    -fx-text-fill: white;
+}
+
+.button {
+    -fx-background-color: #4CAF50;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-padding: 10 20;
+    -fx-background-radius: 5;
+}
+
+.button:hover {
+    -fx-background-color: #45a049;
+    -fx-cursor: hand;
+}
+
+.dialog-pane {
+    -fx-background-color: #2b2b2b;
+}
+
+.dialog-pane .header-panel {
+    -fx-background-color: #333333;
+}
+
+.dialog-pane .header-panel .label {
+    -fx-text-fill: white;
+}
+
+.dialog-pane .content {
+    -fx-background-color: #2b2b2b;
+}
+
+.dialog-pane .button-bar .button {
+    -fx-background-color: #4CAF50;
+    -fx-text-fill: white;
+}
+
+.dialog-pane .button-bar .button:hover {
+    -fx-background-color: #45a049;
+}
+
+.text-field {
+    -fx-background-color: #3c3c3c;
+    -fx-text-fill: white;
+    -fx-prompt-text-fill: #808080;
+    -fx-padding: 5;
+    -fx-background-radius: 3;
+}
+
+.text-area {
+    -fx-background-color: #3c3c3c;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+}
+
+.text-area .content {
+    -fx-background-color: #3c3c3c;
+}
+
+.label {
+    -fx-text-fill: white;
+}
+
+.alert {
+    -fx-background-color: white;
+}
+
+.alert .button {
+    -fx-background-color: #3498db;
+    -fx-text-fill: white;
+}
+
+.alert .button:hover {
+    -fx-background-color: #2980b9;
+}
+
+.menu {
+    -fx-text-fill: white;
+}
+
+.menu-item {
+    -fx-background-color: #333333;
+}
+
+.menu-item:hover {
+    -fx-background-color: #4CAF50;
+} 
