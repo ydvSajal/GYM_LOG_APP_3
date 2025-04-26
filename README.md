@@ -34,78 +34,77 @@ GYM_MANAGEMENT_SYSTEM/
 ```mermaid
 classDiagram
     %% Theme Configuration
-    classDiagram
-        class GymManagementGUI {
-            -memberManager: MemberManager
-            -workoutManager: WorkoutManager
-            +start(Stage primaryStage)
-            +showRegisterMemberDialog()
-            +showRecordWorkoutDialog()
-            +showCalculateBMIDialog()
-            +showMemberInfoDialog()
-        }
+    class GymManagementGUI {
+        -memberManager: MemberManager
+        -workoutManager: WorkoutManager
+        +start(Stage primaryStage)
+        +showRegisterMemberDialog()
+        +showRecordWorkoutDialog()
+        +showCalculateBMIDialog()
+        +showMemberInfoDialog()
+    }
 
-        class GymManagementSystem {
-            -memberManager: MemberManager
-            -workoutManager: WorkoutManager
-            +addMember(Member)
-            +removeMember(Member)
-            +recordWorkout(int, String, int)
-            +getMemberWorkouts(int)
-        }
+    class GymManagementSystem {
+        -memberManager: MemberManager
+        -workoutManager: WorkoutManager
+        +addMember(Member)
+        +removeMember(Member)
+        +recordWorkout(int, String, int)
+        +getMemberWorkouts(int)
+    }
 
-        class MemberManager {
-            -members: List~Member~
-            +registerNewMember(String, int, String)
-            +getMember(int)
-            +getAllMembers()
-            +updateMember(int, String, int, String)
-        }
+    class MemberManager {
+        -members: List~Member~
+        +registerNewMember(String, int, String)
+        +getMember(int)
+        +getAllMembers()
+        +updateMember(int, String, int, String)
+    }
 
-        class WorkoutManager {
-            -workouts: List~Workout~
-            -memberManager: MemberManager
-            +recordWorkout(int, String, int)
-            +getWorkoutHistory(int)
-        }
+    class WorkoutManager {
+        -workouts: List~Workout~
+        -memberManager: MemberManager
+        +recordWorkout(int, String, int)
+        +getWorkoutHistory(int)
+    }
 
-        class Member {
-            -id: int
-            -name: String
-            -age: int
-            -membershipType: String
-            -height: double
-            -weight: double
-            -bmi: double
-            +calculateBMI()
-            +getBMIStatus()
-        }
+    class Member {
+        -id: int
+        -name: String
+        -age: int
+        -membershipType: String
+        -height: double
+        -weight: double
+        -bmi: double
+        +calculateBMI()
+        +getBMIStatus()
+    }
 
-        class Workout {
-            -id: int
-            -memberId: int
-            -exercise: String
-            -sets: int
-            -date: String
-        }
+    class Workout {
+        -id: int
+        -memberId: int
+        -exercise: String
+        -sets: int
+        -date: String
+    }
 
-        class DataStorage {
-            -MEMBERS_FILE: String
-            -WORKOUTS_FILE: String
-            +saveMembers(List~Member~)
-            +loadMembers()
-            +saveWorkouts(List~Workout~)
-            +loadWorkouts()
-        }
+    class DataStorage {
+        -MEMBERS_FILE: String
+        -WORKOUTS_FILE: String
+        +saveMembers(List~Member~)
+        +loadMembers()
+        +saveWorkouts(List~Workout~)
+        +loadWorkouts()
+    }
 
-        GymManagementGUI --> GymManagementSystem : uses
-        GymManagementSystem --> MemberManager : manages
-        GymManagementSystem --> WorkoutManager : manages
-        MemberManager --> Member : creates/manages
-        WorkoutManager --> Workout : creates/manages
-        MemberManager --> DataStorage : saves/loads
-        WorkoutManager --> DataStorage : saves/loads
-        WorkoutManager --> MemberManager : validates
+    GymManagementGUI --> GymManagementSystem : uses
+    GymManagementSystem --> MemberManager : manages
+    GymManagementSystem --> WorkoutManager : manages
+    MemberManager --> Member : creates/manages
+    WorkoutManager --> Workout : creates/manages
+    MemberManager --> DataStorage : saves/loads
+    WorkoutManager --> DataStorage : saves/loads
+    WorkoutManager --> MemberManager : validates
 
     %% Style Configuration
     classDef default fill:#1a1a1a,stroke:#666,stroke-width:2px,color:#fff
