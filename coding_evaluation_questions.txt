@@ -1,0 +1,301 @@
+# Gym Management System - Coding Evaluation Questions
+
+## Basic Level Questions
+
+### Member Class Implementation
+1. What is the purpose of the Member class constructor?
+   Answer: The constructor initializes a new Member object with:
+   ```java
+   public Member(int id, String name, int age, String membershipType) {
+       this.id = id;
+       this.name = name;
+       this.age = age;
+       this.membershipType = membershipType;
+       this.joinDate = LocalDate.now().toString();
+       this.status = "Active";
+       this.height = 0.0;
+       this.weight = 0.0;
+       this.bmi = 0.0;
+   }
+   ```
+   It sets default values for joinDate, status, height, weight, and bmi.
+
+2. Why are getters and setters used in the Member class?
+   Answer: Getters and setters provide controlled access to private fields:
+   - Encapsulation: Fields are private and can only be accessed through methods
+   - Validation: Setters can include validation logic (e.g., BMI calculation)
+   - Flexibility: Implementation can change without affecting other code
+   - Data integrity: Controlled modification of member data
+
+3. How is BMI calculated in the Member class?
+   Answer: BMI is calculated in the private calculateBMI() method:
+   ```java
+   private void calculateBMI() {
+       if (height > 0 && weight > 0) {
+           this.bmi = weight / (height * height);
+       }
+   }
+   ```
+   It's called automatically when height or weight is set.
+
+4. What is the purpose of the toString() method in Member class?
+   Answer: The toString() method provides a formatted string representation of a member:
+   ```java
+   @Override
+   public String toString() {
+       return "Member ID: " + id + "\n" +
+              "Name: " + name + "\n" +
+              "Age: " + age + "\n" +
+              "Membership Type: " + membershipType + "\n" +
+              "Height: " + String.format("%.2f", height) + "m\n" +
+              "Weight: " + String.format("%.2f", weight) + "kg\n" +
+              "BMI: " + String.format("%.2f", bmi) + " (" + getBMIStatus() + ")\n" +
+              "Join Date: " + joinDate + "\n" +
+              "Status: " + status;
+   }
+   ```
+   It formats member data for display.
+
+5. How does the getBMIStatus() method work?
+   Answer: The method categorizes BMI values:
+   ```java
+   public String getBMIStatus() {
+       if (bmi < 18.5) return "Underweight";
+       else if (bmi < 25) return "Normal weight";
+       else if (bmi < 30) return "Overweight";
+       else return "Obese";
+   }
+   ```
+   It returns a string based on BMI ranges.
+
+### MemberManager Class Implementation
+1. How does MemberManager initialize member data?
+   Answer: The constructor loads existing members and sets the next ID:
+   ```java
+   public MemberManager() {
+       members = DataStorage.loadMembers();
+       nextId = members.stream()
+                      .mapToInt(Member::getId)
+                      .max()
+                      .orElse(0) + 1;
+   }
+   ```
+   It uses Java streams to find the highest ID.
+
+2. What is the purpose of the registerNewMember method?
+   Answer: The method creates and adds a new member:
+   ```java
+   public void registerNewMember(String name, int age, String membershipType) {
+       Member member = new Member(nextId++, name, age, membershipType);
+       members.add(member);
+       DataStorage.saveMembers(members);
+   }
+   ```
+   It auto-increments the ID and saves to storage.
+
+3. How does getMember handle member lookup?
+   Answer: The method uses Optional to safely handle member lookup:
+   ```java
+   public Member getMember(int id) {
+       Optional<Member> member = members.stream()
+                                      .filter(m -> m.getId() == id)
+                                      .findFirst();
+       return member.orElseThrow(() -> new IllegalArgumentException("Member not found with ID: " + id));
+   }
+   ```
+   It throws an exception if member not found.
+
+4. What is the purpose of the getAllMembersInfo method?
+   Answer: The method creates a formatted string of all members:
+   ```java
+   public String getAllMembersInfo() {
+       StringBuilder sb = new StringBuilder();
+       for (Member member : members) {
+           sb.append(member.toString()).append("\n");
+       }
+       return sb.toString();
+   }
+   ```
+   It uses StringBuilder for efficient string concatenation.
+
+5. How does updateMember handle member updates?
+   Answer: The method updates member fields and saves changes:
+   ```java
+   public void updateMember(int memberId, String name, int age, String membershipType) {
+       Member member = getMember(memberId);
+       member.setName(name);
+       member.setAge(age);
+       member.setMembershipType(membershipType);
+       DataStorage.saveMembers(members);
+   }
+   ```
+   It persists changes to storage.
+
+## Medium Level Questions
+
+### Code Structure and Design
+1. Why is Optional used in the getMember method?
+   Answer: Optional provides:
+   - Null safety: Prevents NullPointerException
+   - Clear intent: Shows that a value might not exist
+   - Functional style: Enables stream operations
+   - Better error handling: Can throw custom exceptions
+
+2. How does the stream API improve the code?
+   Answer: Stream API benefits:
+   - Functional programming style
+   - Parallel processing capability
+   - Cleaner code for data manipulation
+   - Built-in filtering and mapping
+   - Reduced boilerplate code
+
+3. What is the purpose of StringBuilder in getAllMembersInfo?
+   Answer: StringBuilder benefits:
+   - Efficient string concatenation
+   - Better performance for multiple appends
+   - Memory optimization
+   - Thread safety (in this case)
+   - Clear string building pattern
+
+4. Why are member fields private in the Member class?
+   Answer: Private fields provide:
+   - Encapsulation
+   - Data hiding
+   - Controlled access
+   - Implementation flexibility
+   - Better maintainability
+
+5. How does the system handle data persistence?
+   Answer: Data persistence is handled through:
+   - DataStorage class for file operations
+   - Automatic saving after changes
+   - Text file storage
+   - Error handling for file operations
+   - Data consistency checks
+
+### Error Handling and Validation
+1. How are exceptions handled in the getMember method?
+   Answer: Exception handling:
+   ```java
+   return member.orElseThrow(() -> new IllegalArgumentException("Member not found with ID: " + id));
+   ```
+   - Custom exception message
+   - Clear error indication
+   - Type-safe error handling
+   - Functional approach
+
+2. What validation is performed in the Member class?
+   Answer: Member validation includes:
+   - BMI calculation validation
+   - Height/weight positive checks
+   - Status value validation
+   - Date format validation
+   - Type safety checks
+
+3. How does the system handle file operations?
+   Answer: File operation handling:
+   - Try-catch blocks
+   - File existence checks
+   - Data format validation
+   - Backup mechanisms
+   - Error logging
+
+4. What is the purpose of the status field in Member?
+   Answer: Status field usage:
+   - Tracks member activity
+   - Enables member deactivation
+   - Supports member filtering
+   - Maintains member state
+   - Enables status-based operations
+
+5. How are member updates validated?
+   Answer: Update validation includes:
+   - Member existence check
+   - Data type validation
+   - Range validation
+   - Format validation
+   - Consistency checks
+
+## Advanced Level Questions
+
+### Code Optimization
+1. How could the Member class be optimized?
+   Answer: Optimization possibilities:
+   - Immutable design
+   - Builder pattern
+   - Caching of calculations
+   - Lazy initialization
+   - Thread safety improvements
+
+2. What improvements could be made to MemberManager?
+   Answer: Manager improvements:
+   - Concurrent collection usage
+   - Caching mechanism
+   - Batch operations
+   - Event-driven updates
+   - Performance monitoring
+
+3. How could the data storage be optimized?
+   Answer: Storage optimization:
+   - Binary serialization
+   - Compression
+   - Indexing
+   - Caching
+   - Batch operations
+
+4. What design patterns could improve the code?
+   Answer: Potential patterns:
+   - Observer for updates
+   - Factory for member creation
+   - Strategy for calculations
+   - Repository for data access
+   - Decorator for member features
+
+5. How could the system be made more scalable?
+   Answer: Scalability improvements:
+   - Database integration
+   - Caching layer
+   - Load balancing
+   - Microservices architecture
+   - Distributed processing
+
+### Testing and Maintenance
+1. How would you test the Member class?
+   Answer: Testing approach:
+   - Unit tests for each method
+   - Validation tests
+   - Edge case testing
+   - State transition tests
+   - Performance tests
+
+2. What testing strategies would you use for MemberManager?
+   Answer: Testing strategies:
+   - Integration tests
+   - Mock testing
+   - Concurrent access tests
+   - Error handling tests
+   - Performance tests
+
+3. How would you implement logging in the system?
+   Answer: Logging implementation:
+   - Log levels
+   - Structured logging
+   - Performance metrics
+   - Error tracking
+   - Audit trails
+
+4. What code quality tools would you use?
+   Answer: Quality tools:
+   - Static analysis
+   - Code coverage
+   - Performance profiling
+   - Memory analysis
+   - Security scanning
+
+5. How would you implement error recovery?
+   Answer: Error recovery:
+   - Transaction management
+   - State restoration
+   - Data validation
+   - Backup mechanisms
+   - Recovery procedures 

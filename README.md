@@ -207,7 +207,7 @@ graph TD
 
 ## Team Responsibilities
 
-### 1. Sajal Kumar (Team Lead & Frontend Developer)
+### 1. Akash (Team Lead & Frontend Developer)
 **Files Responsible For:**
 - `GymManagementGUI.java`
 - Project Setup and Configuration
@@ -221,7 +221,7 @@ graph TD
 - ✅ Coordinate between team members
 - ✅ Code review and quality assurance
 
-### 2. Akash (Backend Developer - Member Management)
+### 2. Sajal Kumar (Backend Developer - Member Management)
 **Files Responsible For:**
 - `Member.java`
 - `MemberManager.java`
@@ -322,8 +322,8 @@ mvn javafx:run
 
 ## Contact Information
 
-- **Sajal Kumar** (Team Lead) - sajalkumar1765@gmail.com
-- **Akash** (Member Management) - [Add Email]
+- **Akash** (Team Lead) - [Add Email]
+- **Sajal Kumar** (Member Management) - sajalkumar1765@gmail.com
 - **Kunal** (Workout Management) - [Add Email]
 - **Devansh** (Data Management) - [Add Email]
 

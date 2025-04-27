@@ -1,0 +1,222 @@
+# Backend Developer - Coding Questions
+
+## Core System Logic
+
+1. How would you implement the GymManagementSystem class?
+   Answer: Core system implementation:
+   ```java
+   public class GymManagementSystem {
+       private final MemberManager memberManager;
+       private final WorkoutManager workoutManager;
+       
+       public GymManagementSystem() {
+           this.memberManager = new MemberManager();
+           this.workoutManager = new WorkoutManager(memberManager);
+       }
+       
+       public void addMember(String name, int age, String membershipType) {
+           memberManager.registerNewMember(name, age, membershipType);
+       }
+       
+       public void recordWorkout(int memberId, String exercise, int sets) {
+           workoutManager.recordWorkout(memberId, exercise, sets);
+       }
+   }
+   ```
+
+2. How would you implement the WorkoutManager class?
+   Answer: Workout management implementation:
+   ```java
+   public class WorkoutManager {
+       private final List<Workout> workouts;
+       private final MemberManager memberManager;
+       
+       public WorkoutManager(MemberManager memberManager) {
+           this.memberManager = memberManager;
+           this.workouts = DataStorage.loadWorkouts();
+       }
+       
+       public void recordWorkout(int memberId, String exercise, int sets) {
+           if (!memberManager.getMember(memberId).getStatus().equals("Active")) {
+               throw new IllegalArgumentException("Member is not active");
+           }
+           Workout workout = new Workout(workouts.size() + 1, memberId, exercise, sets);
+           workouts.add(workout);
+           DataStorage.saveWorkouts(workouts);
+       }
+   }
+   ```
+
+## Data Management
+
+1. How would you implement the DataStorage class?
+   Answer: Data storage implementation:
+   ```java
+   public class DataStorage {
+       private static final String MEMBERS_FILE = "members.txt";
+       private static final String WORKOUTS_FILE = "workouts.txt";
+       
+       public static List<Member> loadMembers() {
+           List<Member> members = new ArrayList<>();
+           try (BufferedReader reader = new BufferedReader(new FileReader(MEMBERS_FILE))) {
+               String line;
+               while ((line = reader.readLine()) != null) {
+                   members.add(parseMember(line));
+               }
+           } catch (IOException e) {
+               // Handle error
+           }
+           return members;
+       }
+       
+       private static Member parseMember(String line) {
+           String[] parts = line.split(",");
+           return new Member(
+               Integer.parseInt(parts[0]),
+               parts[1],
+               Integer.parseInt(parts[2]),
+               parts[3]
+           );
+       }
+   }
+   ```
+
+2. How would you implement data validation in the system?
+   Answer: Data validation implementation:
+   ```java
+   public class MemberValidator {
+       public static void validateMember(String name, int age, String membershipType) {
+           if (name == null || name.trim().isEmpty()) {
+               throw new IllegalArgumentException("Name cannot be empty");
+           }
+           if (age < 0 || age > 120) {
+               throw new IllegalArgumentException("Invalid age");
+           }
+           if (!isValidMembershipType(membershipType)) {
+               throw new IllegalArgumentException("Invalid membership type");
+           }
+       }
+       
+       private static boolean isValidMembershipType(String type) {
+           return Arrays.asList("Basic", "Premium", "VIP").contains(type);
+       }
+   }
+   ```
+
+## Business Logic
+
+1. How would you implement workout validation?
+   Answer: Workout validation implementation:
+   ```java
+   public class WorkoutValidator {
+       public static void validateWorkout(int memberId, String exercise, int sets) {
+           if (memberId <= 0) {
+               throw new IllegalArgumentException("Invalid member ID");
+           }
+           if (exercise == null || exercise.trim().isEmpty()) {
+               throw new IllegalArgumentException("Exercise name cannot be empty");
+           }
+           if (sets <= 0) {
+               throw new IllegalArgumentException("Number of sets must be positive");
+           }
+       }
+   }
+   ```
+
+2. How would you implement member status management?
+   Answer: Status management implementation:
+   ```java
+   public class MemberStatusManager {
+       public static void updateMemberStatus(Member member, String newStatus) {
+           if (!isValidStatus(newStatus)) {
+               throw new IllegalArgumentException("Invalid status");
+           }
+           member.setStatus(newStatus);
+       }
+       
+       private static boolean isValidStatus(String status) {
+           return Arrays.asList("Active", "Inactive", "Suspended").contains(status);
+       }
+   }
+   ```
+
+## Error Handling
+
+1. How would you implement custom exceptions?
+   Answer: Custom exception implementation:
+   ```java
+   public class GymManagementException extends RuntimeException {
+       public GymManagementException(String message) {
+           super(message);
+       }
+       
+       public GymManagementException(String message, Throwable cause) {
+           super(message, cause);
+       }
+   }
+   
+   public class MemberNotFoundException extends GymManagementException {
+       public MemberNotFoundException(int memberId) {
+           super("Member not found with ID: " + memberId);
+       }
+   }
+   ```
+
+2. How would you implement error recovery?
+   Answer: Error recovery implementation:
+   ```java
+   public class ErrorRecovery {
+       public static void handleFileError(String filename) {
+           try {
+               // Try to restore from backup
+               restoreFromBackup(filename);
+           } catch (IOException e) {
+               // If backup fails, create new file
+               createNewFile(filename);
+           }
+       }
+       
+       private static void restoreFromBackup(String filename) throws IOException {
+           File backup = new File(filename + ".bak");
+           if (backup.exists()) {
+               Files.copy(backup.toPath(), new File(filename).toPath());
+           }
+       }
+   }
+   ```
+
+## Performance Optimization
+
+1. How would you optimize member lookup?
+   Answer: Lookup optimization:
+   ```java
+   public class MemberCache {
+       private final Map<Integer, Member> cache;
+       private final MemberManager memberManager;
+       
+       public MemberCache(MemberManager memberManager) {
+           this.memberManager = memberManager;
+           this.cache = new HashMap<>();
+       }
+       
+       public Member getMember(int id) {
+           return cache.computeIfAbsent(id, memberManager::getMember);
+       }
+   }
+   ```
+
+2. How would you implement batch operations?
+   Answer: Batch operations implementation:
+   ```java
+   public class BatchProcessor {
+       public static void processMembers(List<Member> members, Consumer<Member> operation) {
+           members.parallelStream().forEach(operation);
+       }
+       
+       public static void updateMembers(List<Member> members) {
+           processMembers(members, member -> {
+               // Perform update operation
+           });
+       }
+   }
+   ``` 

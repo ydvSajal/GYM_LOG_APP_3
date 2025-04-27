@@ -1,0 +1,245 @@
+# Data Model Developer - Coding Questions
+
+## Member Model
+
+1. How would you design the Member class?
+   Answer: Member class design:
+   ```java
+   public class Member {
+       private final int id;
+       private String name;
+       private int age;
+       private String membershipType;
+       private final String joinDate;
+       private String status;
+       private double height;
+       private double weight;
+       private double bmi;
+       
+       public Member(int id, String name, int age, String membershipType) {
+           this.id = id;
+           this.name = name;
+           this.age = age;
+           this.membershipType = membershipType;
+           this.joinDate = LocalDate.now().toString();
+           this.status = "Active";
+           this.height = 0.0;
+           this.weight = 0.0;
+           this.bmi = 0.0;
+       }
+       
+       // Getters and setters with validation
+       public void setHeight(double height) {
+           if (height <= 0) {
+               throw new IllegalArgumentException("Height must be positive");
+           }
+           this.height = height;
+           calculateBMI();
+       }
+   }
+   ```
+
+2. How would you implement BMI calculation in the Member class?
+   Answer: BMI calculation implementation:
+   ```java
+   private void calculateBMI() {
+       if (height > 0 && weight > 0) {
+           this.bmi = weight / (height * height);
+       }
+   }
+   
+   public String getBMIStatus() {
+       if (bmi < 18.5) return "Underweight";
+       else if (bmi < 25) return "Normal weight";
+       else if (bmi < 30) return "Overweight";
+       else return "Obese";
+   }
+   ```
+
+## Workout Model
+
+1. How would you design the Workout class?
+   Answer: Workout class design:
+   ```java
+   public class Workout {
+       private final int id;
+       private final int memberId;
+       private final String exercise;
+       private final int sets;
+       private final String date;
+       private final List<Set> setDetails;
+       
+       public Workout(int id, int memberId, String exercise, int sets) {
+           this.id = id;
+           this.memberId = memberId;
+           this.exercise = exercise;
+           this.sets = sets;
+           this.date = LocalDate.now().toString();
+           this.setDetails = new ArrayList<>();
+       }
+       
+       public void addSetDetails(int reps, double weight) {
+           setDetails.add(new Set(reps, weight));
+       }
+   }
+   ```
+
+2. How would you implement the Set class for workout details?
+   Answer: Set class implementation:
+   ```java
+   public class Set {
+       private final int reps;
+       private final double weight;
+       private final String notes;
+       
+       public Set(int reps, double weight) {
+           this.reps = reps;
+           this.weight = weight;
+           this.notes = "";
+       }
+       
+       public Set(int reps, double weight, String notes) {
+           this.reps = reps;
+           this.weight = weight;
+           this.notes = notes;
+       }
+   }
+   ```
+
+## Data Validation
+
+1. How would you implement data validation in the models?
+   Answer: Model validation implementation:
+   ```java
+   public class ModelValidator {
+       public static void validateMember(Member member) {
+           if (member.getName() == null || member.getName().trim().isEmpty()) {
+               throw new IllegalArgumentException("Member name cannot be empty");
+           }
+           if (member.getAge() < 0 || member.getAge() > 120) {
+               throw new IllegalArgumentException("Invalid age");
+           }
+           if (member.getHeight() < 0 || member.getWeight() < 0) {
+               throw new IllegalArgumentException("Height and weight must be positive");
+           }
+       }
+       
+       public static void validateWorkout(Workout workout) {
+           if (workout.getExercise() == null || workout.getExercise().trim().isEmpty()) {
+               throw new IllegalArgumentException("Exercise name cannot be empty");
+           }
+           if (workout.getSets() <= 0) {
+               throw new IllegalArgumentException("Number of sets must be positive");
+           }
+       }
+   }
+   ```
+
+## Data Serialization
+
+1. How would you implement serialization for the Member class?
+   Answer: Member serialization implementation:
+   ```java
+   public class MemberSerializer {
+       public static String serialize(Member member) {
+           return String.join(",",
+               String.valueOf(member.getId()),
+               member.getName(),
+               String.valueOf(member.getAge()),
+               member.getMembershipType(),
+               member.getJoinDate(),
+               member.getStatus(),
+               String.valueOf(member.getHeight()),
+               String.valueOf(member.getWeight()),
+               String.valueOf(member.getBMI())
+           );
+       }
+       
+       public static Member deserialize(String data) {
+           String[] parts = data.split(",");
+           Member member = new Member(
+               Integer.parseInt(parts[0]),
+               parts[1],
+               Integer.parseInt(parts[2]),
+               parts[3]
+           );
+           member.setStatus(parts[5]);
+           member.setHeight(Double.parseDouble(parts[6]));
+           member.setWeight(Double.parseDouble(parts[7]));
+           return member;
+       }
+   }
+   ```
+
+2. How would you implement serialization for the Workout class?
+   Answer: Workout serialization implementation:
+   ```java
+   public class WorkoutSerializer {
+       public static String serialize(Workout workout) {
+           return String.join(",",
+               String.valueOf(workout.getId()),
+               String.valueOf(workout.getMemberId()),
+               workout.getExercise(),
+               String.valueOf(workout.getSets()),
+               workout.getDate()
+           );
+       }
+       
+       public static Workout deserialize(String data) {
+           String[] parts = data.split(",");
+           return new Workout(
+               Integer.parseInt(parts[0]),
+               Integer.parseInt(parts[1]),
+               parts[2],
+               Integer.parseInt(parts[3])
+           );
+       }
+   }
+   ```
+
+## Data Relationships
+
+1. How would you implement the relationship between Member and Workout?
+   Answer: Member-Workout relationship:
+   ```java
+   public class MemberWorkoutRelationship {
+       private final Map<Integer, List<Workout>> memberWorkouts;
+       
+       public MemberWorkoutRelationship() {
+           this.memberWorkouts = new HashMap<>();
+       }
+       
+       public void addWorkout(Workout workout) {
+           memberWorkouts.computeIfAbsent(workout.getMemberId(), k -> new ArrayList<>())
+                        .add(workout);
+       }
+       
+       public List<Workout> getMemberWorkouts(int memberId) {
+           return memberWorkouts.getOrDefault(memberId, Collections.emptyList());
+       }
+   }
+   ```
+
+2. How would you implement workout history tracking?
+   Answer: Workout history implementation:
+   ```java
+   public class WorkoutHistory {
+       private final Map<Integer, TreeMap<LocalDate, List<Workout>>> history;
+       
+       public WorkoutHistory() {
+           this.history = new HashMap<>();
+       }
+       
+       public void addWorkout(Workout workout) {
+           LocalDate date = LocalDate.parse(workout.getDate());
+           history.computeIfAbsent(workout.getMemberId(), k -> new TreeMap<>())
+                 .computeIfAbsent(date, k -> new ArrayList<>())
+                 .add(workout);
+       }
+       
+       public List<Workout> getWorkoutsOnDate(int memberId, LocalDate date) {
+           return history.getOrDefault(memberId, new TreeMap<>())
+                        .getOrDefault(date, Collections.emptyList());
+       }
+   }
+   ``` 

@@ -1,0 +1,221 @@
+# GUI Developer - Coding Questions
+
+## JavaFX Implementation
+
+1. How would you implement the dark theme in the GUI?
+   Answer: Dark theme implementation using CSS:
+   ```java
+   // In GymManagementGUI.java
+   public void start(Stage stage) {
+       Scene scene = new Scene(root);
+       scene.getStylesheets().add(getClass().getResource("dark-theme.css").toExternalForm());
+       stage.setScene(scene);
+   }
+   ```
+   CSS file would contain:
+   ```css
+   .root {
+       -fx-background-color: #2b2b2b;
+       -fx-text-fill: #ffffff;
+   }
+   .button {
+       -fx-background-color: #3c3f41;
+       -fx-text-fill: #ffffff;
+   }
+   ```
+
+2. How would you implement the member registration dialog?
+   Answer: Dialog implementation:
+   ```java
+   public void showRegisterMemberDialog() {
+       Dialog<Member> dialog = new Dialog<>();
+       dialog.setTitle("Register New Member");
+       
+       // Create form fields
+       TextField nameField = new TextField();
+       TextField ageField = new TextField();
+       ComboBox<String> membershipType = new ComboBox<>();
+       
+       // Add validation
+       ageField.textProperty().addListener((observable, oldValue, newValue) -> {
+           if (!newValue.matches("\\d*")) {
+               ageField.setText(newValue.replaceAll("[^\\d]", ""));
+           }
+       });
+   }
+   ```
+
+3. How would you implement real-time updates in the GUI?
+   Answer: Real-time updates using JavaFX properties:
+   ```java
+   // In GymManagementGUI.java
+   private final ObservableList<Member> members = FXCollections.observableArrayList();
+   
+   public void updateMemberList() {
+       members.setAll(memberManager.getAllMembers());
+   }
+   
+   // In the table view
+   TableView<Member> memberTable = new TableView<>(members);
+   ```
+
+4. How would you handle error messages in the GUI?
+   Answer: Error handling implementation:
+   ```java
+   public void showErrorDialog(String message) {
+       Alert alert = new Alert(Alert.AlertType.ERROR);
+       alert.setTitle("Error");
+       alert.setHeaderText(null);
+       alert.setContentText(message);
+       alert.showAndWait();
+   }
+   ```
+
+5. How would you implement the BMI calculator interface?
+   Answer: BMI calculator implementation:
+   ```java
+   public void showCalculateBMIDialog() {
+       Dialog<Double> dialog = new Dialog<>();
+       dialog.setTitle("Calculate BMI");
+       
+       // Create input fields
+       TextField heightField = new TextField();
+       TextField weightField = new TextField();
+       
+       // Add calculation button
+       Button calculateButton = new Button("Calculate");
+       calculateButton.setOnAction(e -> {
+           double height = Double.parseDouble(heightField.getText());
+           double weight = Double.parseDouble(weightField.getText());
+           double bmi = weight / (height * height);
+           dialog.setResult(bmi);
+       });
+   }
+   ```
+
+## Event Handling
+
+1. How would you implement button click handlers?
+   Answer: Button handler implementation:
+   ```java
+   // In GymManagementGUI.java
+   private void setupButtonHandlers() {
+       registerButton.setOnAction(e -> showRegisterMemberDialog());
+       workoutButton.setOnAction(e -> showRecordWorkoutDialog());
+       bmiButton.setOnAction(e -> showCalculateBMIDialog());
+       exitButton.setOnAction(e -> Platform.exit());
+   }
+   ```
+
+2. How would you implement form validation?
+   Answer: Form validation implementation:
+   ```java
+   private boolean validateMemberForm(String name, String age, String membershipType) {
+       if (name.isEmpty() || age.isEmpty() || membershipType == null) {
+           showErrorDialog("All fields are required");
+           return false;
+       }
+       try {
+           int ageValue = Integer.parseInt(age);
+           if (ageValue < 0 || ageValue > 120) {
+               showErrorDialog("Age must be between 0 and 120");
+               return false;
+           }
+       } catch (NumberFormatException e) {
+           showErrorDialog("Age must be a number");
+           return false;
+       }
+       return true;
+   }
+   ```
+
+3. How would you implement data binding?
+   Answer: Data binding implementation:
+   ```java
+   // In GymManagementGUI.java
+   private void setupDataBinding() {
+       memberTable.setItems(members);
+       memberNameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+       memberAgeColumn.setCellValueFactory(new PropertyValueFactory<>("age"));
+       memberTypeColumn.setCellValueFactory(new PropertyValueFactory<>("membershipType"));
+   }
+   ```
+
+## UI Components
+
+1. How would you implement the main menu layout?
+   Answer: Main menu layout implementation:
+   ```java
+   private VBox createMainMenu() {
+       VBox menu = new VBox(10);
+       menu.setPadding(new Insets(20));
+       
+       Button registerButton = new Button("Register Member");
+       Button workoutButton = new Button("Record Workout");
+       Button bmiButton = new Button("Calculate BMI");
+       Button infoButton = new Button("Show Member Info");
+       Button exitButton = new Button("Exit");
+       
+       menu.getChildren().addAll(registerButton, workoutButton, 
+                               bmiButton, infoButton, exitButton);
+       return menu;
+   }
+   ```
+
+2. How would you implement the member information display?
+   Answer: Member info display implementation:
+   ```java
+   public void showMemberInfoDialog(int memberId) {
+       Dialog<Void> dialog = new Dialog<>();
+       dialog.setTitle("Member Information");
+       
+       Member member = memberManager.getMember(memberId);
+       VBox content = new VBox(10);
+       content.getChildren().addAll(
+           new Label("Name: " + member.getName()),
+           new Label("Age: " + member.getAge()),
+           new Label("Membership Type: " + member.getMembershipType()),
+           new Label("BMI: " + String.format("%.2f", member.getBMI()))
+       );
+       
+       dialog.getDialogPane().setContent(content);
+       dialog.showAndWait();
+   }
+   ```
+
+## Performance Optimization
+
+1. How would you optimize the GUI for large member lists?
+   Answer: List optimization:
+   ```java
+   // In GymManagementGUI.java
+   private void optimizeMemberTable() {
+       memberTable.setItems(members);
+       memberTable.setPlaceholder(new Label("No members found"));
+       memberTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+       
+       // Add pagination
+       Pagination pagination = new Pagination(members.size() / 10);
+       pagination.setPageFactory(pageIndex -> {
+           int fromIndex = pageIndex * 10;
+           int toIndex = Math.min(fromIndex + 10, members.size());
+           memberTable.setItems(FXCollections.observableArrayList(
+               members.subList(fromIndex, toIndex)));
+           return memberTable;
+       });
+   }
+   ```
+
+2. How would you implement lazy loading for member data?
+   Answer: Lazy loading implementation:
+   ```java
+   private void setupLazyLoading() {
+       memberTable.setItems(members);
+       memberTable.getSelectionModel().selectedItemProperty()
+           .addListener((obs, oldSelection, newSelection) -> {
+               if (newSelection != null) {
+                   loadMemberDetails(newSelection.getId());
+               }
+           });
+   }
+   ``` 
